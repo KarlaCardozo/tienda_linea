@@ -1,0 +1,28 @@
+.burger-button {
+    width: 25px;
+    height: 25px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    cursor: pointer;
+  
+    .bar {
+      width: 20px;
+      height: 4px;
+      background-color: #333;
+      transition: 0.4s;
+    }
+  
+    &.open {
+      .bar:first-child {
+        transform: rotate(-50deg) translate(-10px, 5px);
+      }
+      .bar:nth-child(2) {
+        opacity: 0;
+      }
+      .bar:last-child {
+        transform: rotate(50deg) translate(-9px, -5px);
+      }
+    }
+  }
+  
