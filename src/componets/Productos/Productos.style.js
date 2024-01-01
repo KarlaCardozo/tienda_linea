@@ -7,14 +7,13 @@ export const ContainerMenus = styled.div`
   font-family: "Quicksand", sans-serif;
   align-items: center;
   width: 100%;
-  height: 100%;
-  position: fixed;
   overflow: hidden;
+  margin: 0 auto;
 `;
 
 export const ContainerCards = styled.div`
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   width: 100%;
   overflow-y: auto;
 `;
@@ -41,7 +40,21 @@ export const CardsOptions = styled.div`
   margin: 20px;
   font-family: "Quicksand", sans-serif;
   font-weight: 700;
-  font-size: 20px;
+  font-size: 16px;
   cursor: pointer;
 `;
 
+export const ButtonAdd = styled.div`
+  border: 1px 1px 15px #e8dafc;
+  background-color: #d7dbff;
+  border-radius: 5px;
+  color: black;
+  box-shadow: 3px 3px 3px 3px grey;
+  width: 25%;
+  margin: 20px;
+  font-family: "Quicksand", sans-serif;
+  font-size: 12px;
+  cursor: pointer;
+  text-align: center;
+  padding:5px;
+`;
