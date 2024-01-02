@@ -20,7 +20,7 @@ export const ContainerButtons = styled.div`
 `;
 
 export const LessIcon = styled(DashCircle)`
-  color: #349740;
+  color: #A8B1FB;
   width: 25px;
   cursor: pointer;
 `;
@@ -33,7 +33,7 @@ export const Counter = styled.div`
 `;
 
 export const AddIcon = styled(PlusCircle)`
-  color: #349740;
+  color: #A8B1FB;
   width: 25px;
   cursor: pointer;
 `;
