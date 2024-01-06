@@ -23,12 +23,12 @@ const images = [
   {
     id: 2,
     title: '"LAPTOP',
-    imageUrl: <Laptop width="100%" height="100%"/>,
+    imageUrl: <Laptop width="100%" height="100%" />,
   },
   {
     id: 3,
     title: '"COMPUTADORA',
-    imageUrl: <Computadora width="100%" height="100%"/>,
+    imageUrl: <Computadora width="100%" height="100%" />,
   },
 ];
 
@@ -37,12 +37,13 @@ const getCategoryImage = (category) => {
   return image ? image.imageUrl : null;
 };
 
-const Productos = () => {
+const Productos = ({ addToCart }) => {
   const [productos, setProductos] = useState([]);
   const [categorias, setCategorias] = useState([]);
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState("");
   const [productosFiltrados, setProductosFiltrados] = useState([]);
   const [cantidadSeleccionada, setCantidadSeleccionada] = useState(0);
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -65,7 +66,7 @@ const Productos = () => {
     fetchData();
   }, []);
 
-  console.log(productos)
+  console.log(productos);
 
   useEffect(() => {
     // Filtrar productos según la categoría seleccionada
@@ -98,7 +99,6 @@ const Productos = () => {
         </select>
       </div>
       <ContainerCards>
-     
         {categoriaSeleccionada !== ""
           ? productosFiltrados.map((producto, index) => (
               <CardsOptions className="card" key={index}>
@@ -110,7 +110,26 @@ const Productos = () => {
                     setCantidadSeleccionada(cantidad);
                   }}
                 />
-                <ButtonAdd>Agregar</ButtonAdd>
+                <ButtonAdd
+                  onClick={() => {
+                    if (
+                      cantidadSeleccionada > 0 &&
+                      cantidadSeleccionada <= producto.existencia
+                    ) {
+                      const productoAgregado = {
+                        ...producto,
+                        cantidad: cantidadSeleccionada,
+                      };
+                      addToCart(productoAgregado);
+                      setErrorMessage(""); // Limpiar el mensaje de error si la cantidad es válida
+                    } else {
+                      setErrorMessage("La cantidad seleccionada no es válida"); // Establecer el mensaje de error
+                    }
+                  }}
+                >
+                  Agregar
+                </ButtonAdd>
+                {errorMessage && <p>{errorMessage}</p>}
               </CardsOptions>
             ))
           : productos.map((producto, index) => (
@@ -123,7 +142,26 @@ const Productos = () => {
                     setCantidadSeleccionada(cantidad);
                   }}
                 />
-                <ButtonAdd>Agregar</ButtonAdd>
+                <ButtonAdd
+                  onClick={() => {
+                    if (
+                      cantidadSeleccionada > 0 &&
+                      cantidadSeleccionada <= producto.existencia
+                    ) {
+                      const productoAgregado = {
+                        ...producto,
+                        cantidad: cantidadSeleccionada,
+                      };
+                      addToCart(productoAgregado);
+                      setErrorMessage(""); // Limpiar el mensaje de error si la cantidad es válida
+                    } else {
+                      setErrorMessage("La cantidad seleccionada no es válida"); // Establecer el mensaje de error
+                    }
+                  }}
+                >
+                  Agregar
+                </ButtonAdd>
+                {errorMessage && <p>{errorMessage}</p>}
               </CardsOptions>
             ))}
       </ContainerCards>

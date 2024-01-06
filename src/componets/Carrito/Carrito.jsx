@@ -55,11 +55,10 @@ const Carrito = ({ carrito, removeFromCart }) => {
           carrito.map((item) => (
             <Carrito_Item key={item.id_linea_pedido}>
               <Carrito_Text>
-                <Carrito_Nombre>{item.nombre_platillo}</Carrito_Nombre>
-                <Carrito_Precio>{item.precio}</Carrito_Precio>
+                <Carrito_Nombre>{item.nombre_producto}</Carrito_Nombre>
+                <Carrito_Precio>{item.precio_producto}</Carrito_Precio>
                 <Carrito_Desc>{item.descripcion_platillo}</Carrito_Desc>
                 <p>Cantidad: {item.cantidad}</p>
-                <p>Observaciones: {item.observaciones}</p>
               </Carrito_Text>
               <Carrito_Button onClick={() => removeFromCart(item)}>
                 Eliminar

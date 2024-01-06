@@ -2,13 +2,15 @@ import React, { useState } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Productos from "../src/componets/Productos/Productos";
 import Carrito from "../src/componets/Carrito/Carrito";
+import ProductSelect from "../src/componets/ProductSelect/ProductSelect";
 import axios from "axios";
 
 const RoutesComponent = () => {
   const [carrito, setCarrito] = useState([]);
 
-  const addToCart = async (item, cantidad, observaciones) => {
-    try {
+  const addToCart = async (productoAgregado) => {
+    setCarrito(prevCarrito => [...prevCarrito, productoAgregado]);
+   /* try {
       const newCart = {
         ...item,
         nombre_platillo: item.nombre_platillo,
@@ -37,7 +39,7 @@ const RoutesComponent = () => {
       setCarrito((prevState) => [...prevState, combinedCartItem]);
     } catch (error) {
       console.error("Error al agregar al carrito:", error);
-    }
+    }*/
   };
 
   console.log({ carrito });
@@ -50,7 +52,7 @@ const RoutesComponent = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Productos />} />
+        <Route path="/" element={<Productos addToCart={addToCart}/>} />
 
         <Route
           path="/Carrito"
@@ -58,6 +60,7 @@ const RoutesComponent = () => {
             <Carrito carrito={carrito} removeFromCart={removeFromCart} />
           }
         />
+        <Route path="/Descripcion_producto" element={<ProductSelect />} />
       </Routes>
     </Router>
   );
