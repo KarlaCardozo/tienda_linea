@@ -17,18 +17,18 @@ import axios from "axios";
 const images = [
   {
     id: 1,
-    title: '"AIRPODS',
-    imageUrl: <Airpods width="100%" height="100%" />,
+    title: 'Airpods',
+    imageUrl: <Airpods width="50%" height="50%" />,
   },
   {
     id: 2,
-    title: '"LAPTOP',
-    imageUrl: <Laptop width="100%" height="100%" />,
+    title: 'Laptop',
+    imageUrl: <Laptop width="50%" height="50%" />,
   },
   {
     id: 3,
-    title: '"COMPUTADORA',
-    imageUrl: <Computadora width="100%" height="100%" />,
+    title: 'Computadora',
+    imageUrl: <Computadora width="50%" height="50%" />,
   },
 ];
 
@@ -65,6 +65,8 @@ const Productos = ({ addToCart }) => {
 
     fetchData();
   }, []);
+
+  console.log({productos})
 
   console.log(productos);
 
@@ -103,6 +105,7 @@ const Productos = ({ addToCart }) => {
           ? productosFiltrados.map((producto, index) => (
               <CardsOptions className="card" key={index}>
                 {getCategoryImage(producto.nombre_producto)}
+                
                 <CardsLabel>{producto.nombre_producto}</CardsLabel>
                 <CardsLabel>{producto.precio_producto}</CardsLabel>
                 <Contador

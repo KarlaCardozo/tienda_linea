@@ -59,6 +59,7 @@ const Carrito = ({ carrito, removeFromCart }) => {
                 <Carrito_Precio>{item.precio_producto}</Carrito_Precio>
                 <Carrito_Desc>{item.descripcion_platillo}</Carrito_Desc>
                 <p>Cantidad: {item.cantidad}</p>
+                <p>Subtotal: {item.cantidad * item.precio_producto}</p>
               </Carrito_Text>
               <Carrito_Button onClick={() => removeFromCart(item)}>
                 Eliminar
