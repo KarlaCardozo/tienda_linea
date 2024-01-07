@@ -37,6 +37,13 @@ const getCategoryImage = (category) => {
   return image ? image.imageUrl : null;
 };
 
+const formatCurrency = (amount) => {
+  return amount.toLocaleString("es-MX", {
+    style: "currency",
+    currency: "MXN",
+  });
+};
+
 const Productos = ({ addToCart }) => {
   const [productos, setProductos] = useState([]);
   const [categorias, setCategorias] = useState([]);
@@ -107,7 +114,7 @@ const Productos = ({ addToCart }) => {
                 {getCategoryImage(producto.nombre_producto)}
                 
                 <CardsLabel>{producto.nombre_producto}</CardsLabel>
-                <CardsLabel>{producto.precio_producto}</CardsLabel>
+                <CardsLabel>{formatCurrency(producto.precio_producto)}</CardsLabel>
                 <Contador
                   onCountChange={(cantidad) => {
                     setCantidadSeleccionada(cantidad);
@@ -139,7 +146,7 @@ const Productos = ({ addToCart }) => {
               <CardsOptions className="card" key={index}>
                 {getCategoryImage(producto.nombre_producto)}
                 <CardsLabel>{producto.nombre_producto}</CardsLabel>
-                <CardsLabel>{producto.precio_producto}</CardsLabel>
+                <CardsLabel>{formatCurrency(producto.precio_producto)}</CardsLabel>
                 <Contador
                   onCountChange={(cantidad) => {
                     setCantidadSeleccionada(cantidad);

@@ -22,7 +22,7 @@ export const Carrito_Item = styled.div`
   background-color: #ffffff;
   border-radius: 5px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-  width: 200px;
+  width: 100%;
 `;
 
 export const Carrito_Img = styled.img`
@@ -33,8 +33,10 @@ export const Carrito_Img = styled.img`
 
 export const Carrito_Text = styled.div`
   display: flex;
-  flex-direction: column;
-  gap: 5px;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  width:100%;
 `;
 
 export const Carrito_Nombre = styled.h3`
@@ -103,7 +105,82 @@ export const ContainerHeader = styled.div`
   display: flex;
   flex-wrap: wrap;
   flex-direction: row;
-  justify-content: space-around;
+  justify-content: center;
   align-items: center;
   width: 100%;
 `;
+
+
+const ModalContainer = styled.div`
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+`;
+
+const Backdrop = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+  z-index: 9998;
+`;
+
+export const Modal = ({ children }) => {
+  return (
+    <>
+      <Backdrop />
+      <ModalContainer>{children}</ModalContainer>
+    </>
+  );
+};
+
+export const Input = styled.input`
+ width: 95%;
+ padding: 5px;
+ margin-top:20px;
+ margin-bottom: 30px;
+ border: 1px solid #ccc;
+ border-radius: 3px;
+ font-size: 16px;
+ transition: border-color 0.3s;
+
+ &:focus {
+    border-color: #0070f3;
+    outline: none;
+ }
+`;
+
+export const Button = styled.button`
+ width: 50%;
+ padding: 5px;
+ background-color: #0070f3;
+ color: white;
+ font-size: 16px;
+ border: none;
+ border-radius: 3px;
+ cursor: pointer;
+ transition: background-color 0.3s;
+
+ &:hover {
+    background-color: #0050d0;
+ }
+`;
+
+export const CloseButton = styled(Button)`
+ background-color: #f44336;
+
+ &:hover {
+    background-color: #c70000;
+ }
+`;
+
+
+

@@ -1,8 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Carrito_Container,
   Carrito_Item,
-  Carrito_Img,
   Carrito_Text,
   Carrito_Nombre,
   Carrito_Precio,
@@ -13,34 +12,53 @@ import {
   EnviarOrdenButton,
   BackIcon,
   ContainerHeader,
+  Modal,
+  Input,
+  Button,
+  CloseButton,
 } from "./Carrito.style";
 import NavBar from "../NavBar/Navbar";
 import { Link } from "react-router-dom";
 import axios from "axios";
 
+const formatCurrency = (amount) => {
+  return amount.toLocaleString("es-MX", {
+    style: "currency",
+    currency: "MXN",
+  });
+};
+
 const Carrito = ({ carrito, removeFromCart }) => {
+  const [showModal, setShowModal] = useState(false);
+  const [clienteId, setClienteId] = useState("");
+
   const enviarOrden = async () => {
-    try {
-      // Aquí asumimos que queremos enviar la orden con todos los elementos del carrito
-      const promises = carrito.map(async (item) => {
-        const response = await axios.post(
-          "http://localhost:3000/enviar_orden",
-          {
-            id_linea_pedido: item.id_linea_pedido,
-            id_mesa: 2, // Esto debería ser dinámico, no estático
-          }
-        );
-        return response.data;
-      });
+    if (clienteId) {
+      try {
+        const promises = carrito.map(async (item) => {
+          const response = await axios.post(
+            "http://localhost:3000/enviar_orden",
+            {
+              id_linea_pedido: item.id_linea_pedido,
+              id_mesa: 2,
+              id_cliente: clienteId, // Agrega el ID del cliente al pedido
+            }
+          );
+          return response.data;
+        });
 
-      const orderResponses = await Promise.all(promises);
-      console.log(orderResponses);
-
-      // Una vez enviada la orden, podrías limpiar el carrito
-    } catch (error) {
-      console.error("Error al enviar la orden:", error);
+        const orderResponses = await Promise.all(promises);
+        console.log(orderResponses);
+        setShowModal(false); // Cerrar el modal después de enviar la orden
+      } catch (error) {
+        console.error("Error al enviar la orden:", error);
+      }
+    } else {
+      // Mostrar mensaje de error si no se ingresa el ID del cliente
+      alert("Por favor, ingresa tu ID de cliente");
     }
   };
+
   return (
     <div>
       <NavBar />
@@ -49,21 +67,35 @@ const Carrito = ({ carrito, removeFromCart }) => {
           <Link to="/">
             <BackIcon />
           </Link>
-          <label>Orden</label>
+          <label>Carrito de compras</label>
+          <Input
+            type="text"
+            placeholder="Ingresa tu ID de cliente"
+            value={clienteId}
+            onChange={(e) => setClienteId(e.target.value)}
+          />
         </ContainerHeader>
         {carrito && carrito.length > 0 ? (
           carrito.map((item) => (
             <Carrito_Item key={item.id_linea_pedido}>
               <Carrito_Text>
-                <Carrito_Nombre>{item.nombre_producto}</Carrito_Nombre>
-                <Carrito_Precio>{item.precio_producto}</Carrito_Precio>
-                <Carrito_Desc>{item.descripcion_platillo}</Carrito_Desc>
-                <p>Cantidad: {item.cantidad}</p>
-                <p>Subtotal: {item.cantidad * item.precio_producto}</p>
+                <div>
+                  <Carrito_Nombre>{item.nombre_producto}</Carrito_Nombre>
+                  <Carrito_Precio>
+                    {formatCurrency(item.precio_producto)}
+                  </Carrito_Precio>
+                  <p>Cantidad: {item.cantidad}</p>
+                </div>
+                <div>
+                  <p>
+                    Subtotal:{" "}
+                    {formatCurrency(item.cantidad * item.precio_producto)}
+                  </p>
+                </div>
+                <Carrito_Button onClick={() => removeFromCart(item)}>
+                  Eliminar
+                </Carrito_Button>
               </Carrito_Text>
-              <Carrito_Button onClick={() => removeFromCart(item)}>
-                Eliminar
-              </Carrito_Button>
             </Carrito_Item>
           ))
         ) : (
@@ -75,9 +107,10 @@ const Carrito = ({ carrito, removeFromCart }) => {
       </Carrito_Container>
       {carrito && carrito.length > 0 && (
         <EnviarOrdenButton onClick={enviarOrden}>
-          Enviar Orden
+          Proceder al pago
         </EnviarOrdenButton>
       )}
+      {showModal && <Modal></Modal>}
     </div>
   );
 };
