@@ -13,7 +13,7 @@ import {
   ContainerHeader,
   Modal,
   Input,
-  Carrito_info
+  Carrito_info,
 } from "./Carrito.style";
 import NavBar from "../NavBar/Navbar";
 import { Link } from "react-router-dom";
@@ -30,32 +30,19 @@ const Carrito = ({ carrito, removeFromCart }) => {
   const [showModal, setShowModal] = useState(false);
   const [clienteId, setClienteId] = useState("");
 
-  const enviarOrden = async () => {
-    if (clienteId) {
-      try {
-        const promises = carrito.map(async (item) => {
-          const response = await axios.post(
-            "http://localhost:3000/enviar_orden",
-            {
-              id_linea_pedido: item.id_linea_pedido,
-              id_mesa: 2,
-              id_cliente: clienteId, // Agrega el ID del cliente al pedido
-            }
-          );
-          return response.data;
-        });
+  // Calcular el total de descuentos
+  const totalDescuentos = carrito.reduce((total, item) => {
+    return total + item.precio_producto * item.descuento * item.cantidad;
+  }, 0);
 
-        const orderResponses = await Promise.all(promises);
-        console.log(orderResponses);
-        setShowModal(false); // Cerrar el modal después de enviar la orden
-      } catch (error) {
-        console.error("Error al enviar la orden:", error);
-      }
-    } else {
-      // Mostrar mensaje de error si no se ingresa el ID del cliente
-      alert("Por favor, ingresa tu ID de cliente");
-    }
-  };
+  // Calcular el total de la orden
+  const totalOrden = carrito.reduce((total, item) => {
+    return (
+      total +
+      item.cantidad * item.precio_producto -
+      item.precio_producto * item.descuento * item.cantidad
+    );
+  }, 0);
 
   return (
     <div>
@@ -74,28 +61,53 @@ const Carrito = ({ carrito, removeFromCart }) => {
           />
         </ContainerHeader>
         {carrito && carrito.length > 0 ? (
-          carrito.map((item) => (
-            <Carrito_Item key={item.id_linea_pedido}>
+          <>
+            {carrito.map((item) => (
+              <Carrito_Item key={item.id_linea_pedido}>
+                <Carrito_Text>
+                  <Carrito_info>
+                    <Carrito_Nombre>{item.nombre_producto}</Carrito_Nombre>
+                    <Carrito_Precio>
+                      {formatCurrency(item.precio_producto)}
+                    </Carrito_Precio>
+                    <p>Cantidad: {item.cantidad}</p>
+                  </Carrito_info>
+                  <div>
+                    <p>
+                      Descuento:{" "}
+                      {formatCurrency(
+                        item.precio_producto * item.descuento * item.cantidad
+                      )}
+                    </p>
+                  </div>
+                  <div>
+                    <p>
+                      Subtotal:{" "}
+                      {formatCurrency(
+                        item.cantidad * item.precio_producto -
+                          item.precio_producto * item.descuento * item.cantidad // Restar el descuento
+                      )}
+                    </p>
+                  </div>
+
+                  <Carrito_Button onClick={() => removeFromCart(item)}>
+                    Eliminar
+                  </Carrito_Button>
+                </Carrito_Text>
+              </Carrito_Item>
+            ))}
+            {/* Mostrar los totales */}
+            <Carrito_Item>
               <Carrito_Text>
-                <Carrito_info>
-                  <Carrito_Nombre>{item.nombre_producto}</Carrito_Nombre>
-                  <Carrito_Precio>
-                    {formatCurrency(item.precio_producto)}
-                  </Carrito_Precio>
-                  <p>Cantidad: {item.cantidad}</p>
-                </Carrito_info>
                 <div>
-                  <p>
-                    Subtotal:{" "}
-                    {formatCurrency(item.cantidad * item.precio_producto)}
-                  </p>
+                  <p>Total de Descuentos: {formatCurrency(totalDescuentos)}</p>
                 </div>
-                <Carrito_Button onClick={() => removeFromCart(item)}>
-                  Eliminar
-                </Carrito_Button>
+                <div>
+                  <p>Total de la Orden: {formatCurrency(totalOrden)}</p>
+                </div>
               </Carrito_Text>
             </Carrito_Item>
-          ))
+          </>
         ) : (
           <ConteinerNADD>
             <p>No hay elementos en el carrito</p>
@@ -104,12 +116,9 @@ const Carrito = ({ carrito, removeFromCart }) => {
         )}
       </Carrito_Container>
       {carrito && carrito.length > 0 && (
-        <Link to='/Pago'>
-        <EnviarOrdenButton onClick={enviarOrden}>
-          Proceder al pago
-        </EnviarOrdenButton>
+        <Link to="/Pago">
+          <EnviarOrdenButton>Proceder al pago</EnviarOrdenButton>
         </Link>
-        
       )}
       {showModal && <Modal></Modal>}
     </div>

@@ -9,6 +9,7 @@ export const Carrito_Container = styled.div`
   justify-content: center;
   align-items: center;
   padding: 15px;
+  width:96%;
 `;
 
 export const Carrito_Item = styled.div`

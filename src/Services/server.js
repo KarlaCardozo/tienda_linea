@@ -43,3 +43,31 @@ app.get("/ordenes", async (req, res) => {
 app.listen(3000, () => {
   console.log("Server is running on port 3000");
 });
+
+
+const enviarOrden = async () => {
+  if (clienteId) {
+    try {
+      const promises = carrito.map(async (item) => {
+        const response = await axios.post(
+          "http://localhost:3000/enviar_orden",
+          {
+            id_linea_pedido: item.id_linea_pedido,
+            id_mesa: 2,
+            id_cliente: clienteId, // Agrega el ID del cliente al pedido
+          }
+        );
+        return response.data;
+      });
+
+      const orderResponses = await Promise.all(promises);
+      console.log(orderResponses);
+      setShowModal(false); // Cerrar el modal después de enviar la orden
+    } catch (error) {
+      console.error("Error al enviar la orden:", error);
+    }
+  } else {
+    // Mostrar mensaje de error si no se ingresa el ID del cliente
+    alert("Por favor, ingresa tu ID de cliente");
+  }
+};

@@ -20,6 +20,7 @@ import {
   StyledTitle,
   StyledList,
   StyledListItem,
+  Pedido
 } from "./Pago.style";
 
 const PaymentMethods = () => {
@@ -48,7 +49,8 @@ const PaymentMethods = () => {
     <div>
       <NavBar />
       <Container_Pago>
-        <p>Seleccione el metodo de pago de su preferencia</p>
+        <p>Seleccione el método de pago de su preferencia</p>
+        {/* Renderizar las opciones de pago */}
         <Container_Met>
           <input
             type="radio"
@@ -56,7 +58,7 @@ const PaymentMethods = () => {
             checked={selectedMethod === "debit"}
             onChange={handleSelectMethod}
           />
-          Tarjeta de debito / crédito
+          Tarjeta de débito/crédito
         </Container_Met>
         <Container_Met>
           <input
@@ -74,7 +76,7 @@ const PaymentMethods = () => {
             checked={selectedMethod === "cash"}
             onChange={handleSelectMethod}
           />
-          Tienda de coneviencia
+          Tienda de conveniencia
         </Container_Met>
         <Container_Met>
           <input
@@ -87,10 +89,6 @@ const PaymentMethods = () => {
         </Container_Met>
       </Container_Pago>
       {renderSelectedMethod()}
-
-      <div>
-        <button>Confirmar Pago</button>
-      </div>
     </div>
   );
 };
@@ -98,25 +96,46 @@ const PaymentMethods = () => {
 const DebitCard = () => {
   const [cardNumber, setCardNumber] = useState("");
   const [cardName, setCardName] = useState("");
-  const [expiryDate, setExpiryDate] = useState("");
-  const [securityCode, setSecurityCode] = useState("");
-  const [useAsDefault, setUseAsDefault] = useState(false);
+  const [cardExp, setCardExp] = useState("");
+  const [cardCVV, setCardCVV] = useState("");
+  const [selectedMethod, setSelectedMethod] = useState("");
+  const [registeredCards, setRegisteredCards] = useState([
+    // Ejemplo de tarjetas registradas por el cliente
+    { cardNumber: "**** **** **** 1234", cardName: "Cliente Tarjeta" },
+    // Agrega más tarjetas si las tienes registradas
+  ]);
+  const handleAddCard = () => {
+    const newCard = {
+      cardNumber: cardNumber,
+      cardName: cardName,
+      cardExp: cardExp,
+      cardCVV: cardCVV,
+    };
+    setRegisteredCards([...registeredCards, newCard]);
+    setCardNumber("");
+    setCardName("");
+  };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Form data:", {
-      cardNumber,
-      cardName,
-      expiryDate,
-      securityCode,
-      useAsDefault,
-    });
+  const handleSelectMethod = (event) => {
+    setSelectedMethod(event.target.value);
   };
 
   return (
     <Container>
+      <div>
+        {registeredCards.map((card, index) => (
+          <Container_Met key={index}>
+            <input
+              type="radio"
+              value={`card${index}`}
+              onChange={handleSelectMethod}
+            />
+            {card.cardNumber} - {card.cardName}
+          </Container_Met>
+        ))}
+      </div>
       <Title>Agregar una tarjeta de crédito o débito</Title>
-      <Form onSubmit={handleSubmit}>
+      <Form>
         <Input
           type="text"
           placeholder="Número de tarjeta"
@@ -131,24 +150,21 @@ const DebitCard = () => {
         />
         <Input
           type="text"
-          placeholder="Fecha de vencimiento"
-          value={expiryDate}
-          onChange={(e) => setExpiryDate(e.target.value)}
+          placeholder="Fecha vencimiento"
+          value={cardExp}
+          onChange={(e) => setCardExp(e.target.value)}
         />
         <Input
           type="text"
-          placeholder="Código de Seguridad"
-          value={securityCode}
-          onChange={(e) => setSecurityCode(e.target.value)}
+          placeholder="CVV"
+          value={cardCVV}
+          onChange={(e) => setCardCVV(e.target.value)}
         />
-        <Checkbox
-          type="checkbox"
-          checked={useAsDefault}
-          onChange={(e) => setUseAsDefault(e.target.checked)}
-        />
-        <Label htmlFor="useAsDefault">Usar como mi pago predeterminado</Label>
-        <Button type="submit">Confirmació CARNET</Button>
+        <Button onClick={handleAddCard}>Confirmar tarjeta</Button>
       </Form>
+      <Pedido>
+        <Button>Hacer Orden</Button>
+      </Pedido>
     </Container>
   );
 };
@@ -162,9 +178,6 @@ const PayPal = () => {
         acepto los Términos y condiciones del servicio.
       </Text>
       <Button>Pagar con PayPal</Button>
-      <Text>
-        ¿Deseas cambiar de método de pago? <Link>Ingresa aquí</Link>
-      </Text>
     </Container>
   );
 };
