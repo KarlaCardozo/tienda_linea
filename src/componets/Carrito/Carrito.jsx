@@ -30,6 +30,52 @@ const Carrito = ({ carrito, removeFromCart }) => {
   const [showModal, setShowModal] = useState(false);
   const [clienteId, setClienteId] = useState("");
 
+  const enviarOrden = async () => {
+    if (clienteId) {
+      const idClienteInt = parseInt(clienteId, 10);
+  
+      try {
+        // Crear la orden
+        const ordenResponse = await axios.post(
+          "http://localhost:3000/nueva_orden",
+          {
+            ID_CLIENTE: idClienteInt,
+          }
+        );
+        const ordenCreada = ordenResponse.data;
+  
+        // Crear líneas de producto para cada elemento en el carrito
+        const promises = carrito.map(async (item) => {
+          try {
+            const response = await axios.post(
+              "http://localhost:3000/nuevo_linea_producto",
+              {
+                ID_PRODUCTO: item.ID_PRODUCTO, // Supongo que tienes el ID_PRODUCTO en el carrito
+                ID_ORDEN: ordenCreada.ID_ORDEN, // Asociar la línea con la orden creada
+                CANTIDAD: item.CANTIDAD, // Supongo que tienes la cantidad en el carrito
+                PRECIO_PROD: item.PRECIO, // Supongo que tienes el precio en el carrito
+                DESCUENTO_LINEA: item.DESCUENTO, // Supongo que tienes el descuento en el carrito
+                MONTO: item.MONTO_TOTAL, // Supongo que tienes el monto total en el carrito
+              }
+            );
+            return response.data;
+          } catch (error) {
+            console.error("Error al enviar la solicitud POST:", error);
+            throw error;
+          }
+        });
+  
+        const results = await Promise.all(promises);
+        console.log("Respuestas:", results);
+        setShowModal(false);
+      } catch (error) {
+        console.error("Error al enviar la orden:", error);
+      }
+    } else {
+      alert("Por favor, ingresa tu ID de cliente");
+    }
+  };
+
   // Calcular el total de descuentos
   const totalDescuentos = carrito.reduce((total, item) => {
     return total + item.precio_producto * item.descuento * item.cantidad;
@@ -85,7 +131,7 @@ const Carrito = ({ carrito, removeFromCart }) => {
                       Subtotal:{" "}
                       {formatCurrency(
                         item.cantidad * item.precio_producto -
-                          item.precio_producto * item.descuento * item.cantidad // Restar el descuento
+                          item.precio_producto * item.descuento * item.cantidad
                       )}
                     </p>
                   </div>
@@ -116,9 +162,11 @@ const Carrito = ({ carrito, removeFromCart }) => {
         )}
       </Carrito_Container>
       {carrito && carrito.length > 0 && (
-        <Link to="/Pago">
-          <EnviarOrdenButton>Proceder al pago</EnviarOrdenButton>
-        </Link>
+        
+          <EnviarOrdenButton onClick={ enviarOrden }>
+            Proceder al pago
+          </EnviarOrdenButton>
+ 
       )}
       {showModal && <Modal></Modal>}
     </div>

@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import NavBar from "../NavBar/Navbar";
-import styled from "styled-components";
+import { useLocation } from "react-router-dom";
 import {
   Container_Pago,
   Container_Met,
@@ -20,11 +20,34 @@ import {
   StyledTitle,
   StyledList,
   StyledListItem,
-  Pedido
+  Pedido,
 } from "./Pago.style";
+import axios from "axios";
 
 const PaymentMethods = () => {
   const [selectedMethod, setSelectedMethod] = useState("");
+  const [paymentOptions, setPaymentOptions] = useState([]);
+
+  const location = useLocation();
+  const { carritoData } = location.state || {};
+  console.log(carritoData);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const productosResponse = await axios.get(
+          "http://localhost:3000/metodo-pago"
+        );
+        setPaymentOptions(productosResponse.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  console.log({ paymentOptions });
 
   const handleSelectMethod = (event) => {
     setSelectedMethod(event.target.value);
@@ -32,13 +55,15 @@ const PaymentMethods = () => {
 
   const renderSelectedMethod = () => {
     switch (selectedMethod) {
-      case "debit":
+      case "Tarjeta de débito":
         return <DebitCard />;
-      case "paypal":
+      case "Tarjeta de crédito":
+        return <DebitCard />;
+      case "Pasarela de pago":
         return <PayPal />;
-      case "cash":
+      case "Tienda de conveniencia":
         return <Cash />;
-      case "transfer":
+      case "Deposito":
         return <Transferencia />;
       default:
         return null;
@@ -50,43 +75,17 @@ const PaymentMethods = () => {
       <NavBar />
       <Container_Pago>
         <p>Seleccione el método de pago de su preferencia</p>
-        {/* Renderizar las opciones de pago */}
-        <Container_Met>
-          <input
-            type="radio"
-            value="debit"
-            checked={selectedMethod === "debit"}
-            onChange={handleSelectMethod}
-          />
-          Tarjeta de débito/crédito
-        </Container_Met>
-        <Container_Met>
-          <input
-            type="radio"
-            value="paypal"
-            checked={selectedMethod === "paypal"}
-            onChange={handleSelectMethod}
-          />
-          PayPal
-        </Container_Met>
-        <Container_Met>
-          <input
-            type="radio"
-            value="cash"
-            checked={selectedMethod === "cash"}
-            onChange={handleSelectMethod}
-          />
-          Tienda de conveniencia
-        </Container_Met>
-        <Container_Met>
-          <input
-            type="radio"
-            value="transfer"
-            checked={selectedMethod === "transfer"}
-            onChange={handleSelectMethod}
-          />
-          Transferencia
-        </Container_Met>
+        {paymentOptions.map((option) => (
+          <Container_Met key={option.id}>
+            <input
+              type="radio"
+              value={option.tipo_metodo}
+              checked={selectedMethod === option.tipo_metodo}
+              onChange={handleSelectMethod}
+            />
+            {option.tipo_metodo}{" "}
+          </Container_Met>
+        ))}
       </Container_Pago>
       {renderSelectedMethod()}
     </div>
@@ -99,11 +98,25 @@ const DebitCard = () => {
   const [cardExp, setCardExp] = useState("");
   const [cardCVV, setCardCVV] = useState("");
   const [selectedMethod, setSelectedMethod] = useState("");
-  const [registeredCards, setRegisteredCards] = useState([
-    // Ejemplo de tarjetas registradas por el cliente
-    { cardNumber: "**** **** **** 1234", cardName: "Cliente Tarjeta" },
-    // Agrega más tarjetas si las tienes registradas
-  ]);
+  const [registeredCards, setRegisteredCards] = useState([]);
+  const [selectedCardIndex, setSelectedCardIndex] = useState(-1);
+  const [selectedCardData, setSelectedCardData] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const metodo = await axios.get(
+          "http://localhost:3000/descripcion_metodo"
+        );
+        setRegisteredCards(metodo.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   const handleAddCard = () => {
     const newCard = {
       cardNumber: cardNumber,
@@ -111,28 +124,42 @@ const DebitCard = () => {
       cardExp: cardExp,
       cardCVV: cardCVV,
     };
+
     setRegisteredCards([...registeredCards, newCard]);
     setCardNumber("");
     setCardName("");
+    setCardExp("");
+    setCardCVV("");
   };
 
-  const handleSelectMethod = (event) => {
-    setSelectedMethod(event.target.value);
+  const handleSelectMethod = (index) => {
+    setSelectedCardIndex(index);
+    setSelectedMethod(`card${index}`);
+    // Aquí se filtra la tarjeta seleccionada
+    const selectedCard = registeredCards.find((card, i) => i === index);
+    setSelectedCardData(selectedCard);
   };
 
   return (
     <Container>
       <div>
-        {registeredCards.map((card, index) => (
-          <Container_Met key={index}>
-            <input
-              type="radio"
-              value={`card${index}`}
-              onChange={handleSelectMethod}
-            />
-            {card.cardNumber} - {card.cardName}
-          </Container_Met>
-        ))}
+        {registeredCards
+          .filter(
+            (card) => card.id_metodo_pago === 1 || card.id_metodo_pago === 2
+          )
+          .map((card, index) => (
+            <Container_Pago key={index}>
+              <Container_Met>
+                <input
+                  type="radio"
+                  value={`card${index}`}
+                  checked={selectedMethod === `card${index}`}
+                  onChange={() => handleSelectMethod(index)}
+                />
+                {card.num_tarjeta} - {card.nom_tarjeta}
+              </Container_Met>
+            </Container_Pago>
+          ))}
       </div>
       <Title>Agregar una tarjeta de crédito o débito</Title>
       <Form>
@@ -163,7 +190,7 @@ const DebitCard = () => {
         <Button onClick={handleAddCard}>Confirmar tarjeta</Button>
       </Form>
       <Pedido>
-        <Button>Hacer Orden</Button>
+        <Button disabled={!selectedCardData}>Hacer Orden</Button>
       </Pedido>
     </Container>
   );

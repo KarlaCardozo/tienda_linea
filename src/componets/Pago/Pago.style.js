@@ -14,7 +14,7 @@ export const Container_Met = styled.label`
   border-radius: 10px;
   padding: 10px;
   margin: 5px;
-  width: 150px;
+  width: 250px;
 `;
 
 export const Container = styled.div`
