@@ -24,13 +24,11 @@ import {
 } from "./Pago.style";
 import axios from "axios";
 
-const PaymentMethods = () => {
+const PaymentMethods = ({ carrito }) => {
   const [selectedMethod, setSelectedMethod] = useState("");
   const [paymentOptions, setPaymentOptions] = useState([]);
 
-  const location = useLocation();
-  const { carritoData } = location.state || {};
-  console.log(carritoData);
+console.log({carrito});
 
   useEffect(() => {
     const fetchData = async () => {
@@ -47,7 +45,6 @@ const PaymentMethods = () => {
     fetchData();
   }, []);
 
-  console.log({ paymentOptions });
 
   const handleSelectMethod = (event) => {
     setSelectedMethod(event.target.value);
@@ -117,25 +114,35 @@ const DebitCard = () => {
     fetchData();
   }, []);
 
-  const handleAddCard = () => {
+  const handleAddCard = async (e) => {
+    e.preventDefault(); 
     const newCard = {
-      cardNumber: cardNumber,
-      cardName: cardName,
-      cardExp: cardExp,
-      cardCVV: cardCVV,
+      id_cliente: 1, // Supongamos que hay un ID de cliente predefinido o puedes obtenerlo de alguna manera
+      id_metodo_pago: 1, // Supongamos que el ID del método de pago es 1 (debes obtenerlo de la interfaz)
+      num_tarjeta: cardNumber,
+      nom_tarjeta: cardName,
+      exp_tarjeta: cardExp,
+      cvv_tarjeta: cardCVV,
     };
-
-    setRegisteredCards([...registeredCards, newCard]);
-    setCardNumber("");
-    setCardName("");
-    setCardExp("");
-    setCardCVV("");
+  
+    try {
+      const response = await axios.post("http://localhost:3000/nuevo_descripcion_metodo", newCard);
+      console.log(response.data); // Muestra la respuesta de la API en la consola
+      setRegisteredCards([...registeredCards, newCard]); // Agrega la tarjeta a la lista solo después de que se confirma en la base de datos
+      setCardNumber("");
+      setCardName("");
+      setCardExp("");
+      setCardCVV("");
+    } catch (error) {
+      console.error("Error al agregar la tarjeta:", error);
+      // Puedes manejar el error de alguna manera aquí, como mostrar un mensaje al usuario
+    }
   };
+  
 
   const handleSelectMethod = (index) => {
     setSelectedCardIndex(index);
     setSelectedMethod(`card${index}`);
-    // Aquí se filtra la tarjeta seleccionada
     const selectedCard = registeredCards.find((card, i) => i === index);
     setSelectedCardData(selectedCard);
   };
@@ -187,7 +194,7 @@ const DebitCard = () => {
           value={cardCVV}
           onChange={(e) => setCardCVV(e.target.value)}
         />
-        <Button onClick={handleAddCard}>Confirmar tarjeta</Button>
+        <Button onSubmit={handleAddCard}>Confirmar tarjeta</Button>
       </Form>
       <Pedido>
         <Button disabled={!selectedCardData}>Hacer Orden</Button>

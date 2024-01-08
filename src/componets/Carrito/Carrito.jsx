@@ -30,32 +30,35 @@ const Carrito = ({ carrito, removeFromCart }) => {
   const [showModal, setShowModal] = useState(false);
   const [clienteId, setClienteId] = useState("");
 
+
   const enviarOrden = async () => {
     if (clienteId) {
       const idClienteInt = parseInt(clienteId, 10);
-  
+
       try {
-        // Crear la orden
         const ordenResponse = await axios.post(
           "http://localhost:3000/nueva_orden",
           {
             ID_CLIENTE: idClienteInt,
           }
         );
-        const ordenCreada = ordenResponse.data;
-  
-        // Crear líneas de producto para cada elemento en el carrito
+        const ordenCreada = ordenResponse.data.nuevaOrden;
+        console.log(ordenCreada);
+
         const promises = carrito.map(async (item) => {
           try {
             const response = await axios.post(
               "http://localhost:3000/nuevo_linea_producto",
               {
-                ID_PRODUCTO: item.ID_PRODUCTO, // Supongo que tienes el ID_PRODUCTO en el carrito
-                ID_ORDEN: ordenCreada.ID_ORDEN, // Asociar la línea con la orden creada
-                CANTIDAD: item.CANTIDAD, // Supongo que tienes la cantidad en el carrito
-                PRECIO_PROD: item.PRECIO, // Supongo que tienes el precio en el carrito
-                DESCUENTO_LINEA: item.DESCUENTO, // Supongo que tienes el descuento en el carrito
-                MONTO: item.MONTO_TOTAL, // Supongo que tienes el monto total en el carrito
+                ID_PRODUCTO: item.id_producto,
+                ID_ORDEN: ordenCreada.id_orden, // Corregido a ID_ORDEN
+                CANTIDAD: item.cantidad,
+                PRECIO_PROD: item.precio_producto,
+                DESCUENTO_LINEA:
+                  item.precio_producto * item.descuento * item.cantidad,
+                MONTO:
+                  item.cantidad * item.precio_producto -
+                  item.precio_producto * item.descuento * item.cantidad,
               }
             );
             return response.data;
@@ -64,7 +67,7 @@ const Carrito = ({ carrito, removeFromCart }) => {
             throw error;
           }
         });
-  
+
         const results = await Promise.all(promises);
         console.log("Respuestas:", results);
         setShowModal(false);
@@ -162,11 +165,12 @@ const Carrito = ({ carrito, removeFromCart }) => {
         )}
       </Carrito_Container>
       {carrito && carrito.length > 0 && (
+        <Link to='/Pago'>
+        <EnviarOrdenButton onClick={enviarOrden}>
+          Proceder al pago
+        </EnviarOrdenButton>
+        </Link>
         
-          <EnviarOrdenButton onClick={ enviarOrden }>
-            Proceder al pago
-          </EnviarOrdenButton>
- 
       )}
       {showModal && <Modal></Modal>}
     </div>

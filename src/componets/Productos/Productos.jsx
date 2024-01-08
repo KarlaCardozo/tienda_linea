@@ -61,7 +61,6 @@ const Productos = ({ addToCart }) => {
     }
   }, [categoriaSeleccionada, productos]);
 
-  console.log({productos})
 
   return (
     <ContainerMenus>

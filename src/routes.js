@@ -9,42 +9,16 @@ import axios from "axios";
 
 const RoutesComponent = () => {
   const [carrito, setCarrito] = useState([]);
+  const [pedidos, setPedidos] = useState([]);
 
   const addToCart = async (productoAgregado) => {
     setCarrito(prevCarrito => [...prevCarrito, productoAgregado]);
-   /* try {
-      const newCart = {
-        ...item,
-        nombre_platillo: item.nombre_platillo,
-        descripcion_platillo: item.descripcion_platillo,
-        cantidad: cantidad,
-        observaciones: observaciones,
-      };
-      const newCartItem = {
-        id_platillo: item.id_platillo,
-        cantidad,
-        monto: item.precio * cantidad,
-        observaciones,
-      };
-
-      const response = await axios.post(
-        "http://localhost:3000/agregar_al_carrito",
-        newCartItem
-      );
-
-      const combinedCartItem = {
-        ...response.data.linea_pedido[0],
-        ...newCart,
-      };
-
-      // Aquí, accedemos directamente a la línea de pedido recibida del servidor
-      setCarrito((prevState) => [...prevState, combinedCartItem]);
-    } catch (error) {
-      console.error("Error al agregar al carrito:", error);
-    }*/
   };
 
-  console.log({ carrito });
+  const pedido = async (elementsPedido) => {
+    setPedidos(prevCarrito => [...prevCarrito, elementsPedido]);
+  };
+
 
   const removeFromCart = (itemToRemove) => {
     const updatedCart = carrito.filter((item) => item.id !== itemToRemove.id);
@@ -63,7 +37,7 @@ const RoutesComponent = () => {
           }
         />
         <Route path="/Descripcion_producto" element={<ProductSelect />} />
-        <Route path="/Pago" element={<PaymentMethods />} />
+        <Route path="/Pago" element={<PaymentMethods carrito={carrito}  />} />
         <Route path="/Ordenes" element={<Orden />} />
 
       </Routes>
