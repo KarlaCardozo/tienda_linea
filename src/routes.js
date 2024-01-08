@@ -3,6 +3,8 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Productos from "../src/componets/Productos/Productos";
 import Carrito from "../src/componets/Carrito/Carrito";
 import ProductSelect from "../src/componets/ProductSelect/ProductSelect";
+import PaymentMethods from "../src/componets/Pago/Pago";
+import Orden from "../src/componets/Ordenes/Ordenes";
 import axios from "axios";
 
 const RoutesComponent = () => {
@@ -61,6 +63,9 @@ const RoutesComponent = () => {
           }
         />
         <Route path="/Descripcion_producto" element={<ProductSelect />} />
+        <Route path="/Pago" element={<PaymentMethods />} />
+        <Route path="/Ordenes" element={<Orden />} />
+
       </Routes>
     </Router>
   );

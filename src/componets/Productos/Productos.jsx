@@ -9,33 +9,7 @@ import {
 import { Link } from "react-router-dom";
 import NavBar from "../NavBar/Navbar";
 import Contador from "../Counter/counter";
-import Airpods from "../../assets/airpods";
-import Laptop from "../../assets/laptop";
-import Computadora from "../../assets/computadora";
 import axios from "axios";
-
-const images = [
-  {
-    id: 1,
-    title: 'Airpods',
-    imageUrl: <Airpods width="50%" height="50%" />,
-  },
-  {
-    id: 2,
-    title: 'Laptop',
-    imageUrl: <Laptop width="50%" height="50%" />,
-  },
-  {
-    id: 3,
-    title: 'Computadora',
-    imageUrl: <Computadora width="50%" height="50%" />,
-  },
-];
-
-const getCategoryImage = (category) => {
-  const image = images.find((img) => img.title === category);
-  return image ? image.imageUrl : null;
-};
 
 const formatCurrency = (amount) => {
   return amount.toLocaleString("es-MX", {
@@ -50,7 +24,7 @@ const Productos = ({ addToCart }) => {
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState("");
   const [productosFiltrados, setProductosFiltrados] = useState([]);
   const [cantidadSeleccionada, setCantidadSeleccionada] = useState(0);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [errorMessages, setErrorMessages] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -63,31 +37,31 @@ const Productos = ({ addToCart }) => {
         const categoriasResponse = await axios.get(
           "http://localhost:3000/categoria"
         );
-        setCategorias(categoriasResponse.data || []); // Asegurarse de que se establezca un arreglo vacío si no hay datos
+        setCategorias(categoriasResponse.data || []);
       } catch (error) {
         console.error("Error fetching data:", error);
-        setCategorias([]); // En caso de error, también establecer un arreglo vacío
+        setCategorias([]);
       }
     };
 
     fetchData();
+    
   }, []);
 
-  console.log({productos})
-
-  console.log(productos);
-
   useEffect(() => {
-    // Filtrar productos según la categoría seleccionada
     if (categoriaSeleccionada !== "") {
       const productosFiltradosPorCategoria = productos.filter(
-        (producto) => producto.categoria === categoriaSeleccionada
+        (producto) => producto.id_categoria === parseInt(categoriaSeleccionada)
       );
       setProductosFiltrados(productosFiltradosPorCategoria);
+      setErrorMessages(Array(productosFiltradosPorCategoria.length).fill(""));
     } else {
-      setProductosFiltrados([]);
+      setProductosFiltrados(productos);
+      setErrorMessages(Array(productos.length).fill(""));
     }
   }, [categoriaSeleccionada, productos]);
+
+  console.log({productos})
 
   return (
     <ContainerMenus>
@@ -101,8 +75,8 @@ const Productos = ({ addToCart }) => {
         >
           <option value="">Todas</option>
           {categorias.map((categoria, index) => (
-            <option key={index} value={categoria.des_categoria}>
-              {categoria.des_categoria.trim()}
+            <option key={index} value={categoria.id_categoria}>
+              {categoria.descripcion_categoria.trim()}
             </option>
           ))}
         </select>
@@ -111,8 +85,6 @@ const Productos = ({ addToCart }) => {
         {categoriaSeleccionada !== ""
           ? productosFiltrados.map((producto, index) => (
               <CardsOptions className="card" key={index}>
-                {getCategoryImage(producto.nombre_producto)}
-                
                 <CardsLabel>{producto.nombre_producto}</CardsLabel>
                 <CardsLabel>{formatCurrency(producto.precio_producto)}</CardsLabel>
                 <Contador
@@ -131,20 +103,23 @@ const Productos = ({ addToCart }) => {
                         cantidad: cantidadSeleccionada,
                       };
                       addToCart(productoAgregado);
-                      setErrorMessage(""); // Limpiar el mensaje de error si la cantidad es válida
+                      const newErrorMessages = [...errorMessages];
+                      newErrorMessages[index] = "";
+                      setErrorMessages(newErrorMessages);
                     } else {
-                      setErrorMessage("La cantidad seleccionada no es válida"); // Establecer el mensaje de error
+                      const newErrorMessages = [...errorMessages];
+                      newErrorMessages[index] = "La cantidad seleccionada no es válida";
+                      setErrorMessages(newErrorMessages);
                     }
                   }}
                 >
                   Agregar
                 </ButtonAdd>
-                {errorMessage && <p>{errorMessage}</p>}
+                {errorMessages[index] && <p>{errorMessages[index]}</p>}
               </CardsOptions>
             ))
           : productos.map((producto, index) => (
               <CardsOptions className="card" key={index}>
-                {getCategoryImage(producto.nombre_producto)}
                 <CardsLabel>{producto.nombre_producto}</CardsLabel>
                 <CardsLabel>{formatCurrency(producto.precio_producto)}</CardsLabel>
                 <Contador
@@ -163,15 +138,19 @@ const Productos = ({ addToCart }) => {
                         cantidad: cantidadSeleccionada,
                       };
                       addToCart(productoAgregado);
-                      setErrorMessage(""); // Limpiar el mensaje de error si la cantidad es válida
+                      const newErrorMessages = [...errorMessages];
+                      newErrorMessages[index] = "";
+                      setErrorMessages(newErrorMessages);
                     } else {
-                      setErrorMessage("La cantidad seleccionada no es válida"); // Establecer el mensaje de error
+                      const newErrorMessages = [...errorMessages];
+                      newErrorMessages[index] = "La cantidad seleccionada no es válida";
+                      setErrorMessages(newErrorMessages);
                     }
                   }}
                 >
                   Agregar
                 </ButtonAdd>
-                {errorMessage && <p>{errorMessage}</p>}
+                {errorMessages[index] && <p>{errorMessages[index]}</p>}
               </CardsOptions>
             ))}
       </ContainerCards>

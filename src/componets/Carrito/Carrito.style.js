@@ -8,7 +8,6 @@ export const Carrito_Container = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 15px;
   padding: 15px;
 `;
 
@@ -50,10 +49,13 @@ export const Carrito_Precio = styled.h4`
   color: #333333;
 `;
 
-export const Carrito_Desc = styled.p`
-  font-size: 14px;
-  color: #777777;
+export const Carrito_info = styled.div`
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction:column;
 `;
+
 
 export const Carrito_Button = styled.button`
   background-color: #f5c152;
@@ -158,29 +160,6 @@ export const Input = styled.input`
  }
 `;
 
-export const Button = styled.button`
- width: 50%;
- padding: 5px;
- background-color: #0070f3;
- color: white;
- font-size: 16px;
- border: none;
- border-radius: 3px;
- cursor: pointer;
- transition: background-color 0.3s;
-
- &:hover {
-    background-color: #0050d0;
- }
-`;
-
-export const CloseButton = styled(Button)`
- background-color: #f44336;
-
- &:hover {
-    background-color: #c70000;
- }
-`;
 
 
 

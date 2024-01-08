@@ -6,7 +6,7 @@ export const Container_Ordenes = styled.div`
   padding: 10px 0 10px 0;
   width: 100%;
   background: linear-gradient(to right, rgb(225, 230, 245), rgb(247, 252, 248));
-  height: 700px;
+  height: 800px;
 `;
 
 export const Title_Orden = styled.label`
@@ -111,4 +111,52 @@ export const Button_Aceptar = styled.button`
     box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.5); /* Sombra al pasar el mouse */
   transform: translateY(-6px);
   }
+`;
+
+
+export const SearchContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  margin-top: 20px;
+`;
+
+export const SearchInput = styled.input`
+  padding: 8px;
+  margin-right: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+`;
+
+export const SearchButton = styled.button`
+  padding: 8px 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #0056b3;
+  }
+`;
+
+export const ContainerDatos = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  margin-bottom: 20px;
+  margin-top: 20px;
+  width:50%;
+  margin:0 auto;
+  font-weight: 600;
+`;
+
+export const Orden_title = styled.p`
+ margin-left:20px;
+  font-weight: 600;
 `;

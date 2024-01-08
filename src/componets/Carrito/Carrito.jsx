@@ -5,7 +5,6 @@ import {
   Carrito_Text,
   Carrito_Nombre,
   Carrito_Precio,
-  Carrito_Desc,
   Carrito_Button,
   Carrito_Icon,
   ConteinerNADD,
@@ -14,8 +13,7 @@ import {
   ContainerHeader,
   Modal,
   Input,
-  Button,
-  CloseButton,
+  Carrito_info
 } from "./Carrito.style";
 import NavBar from "../NavBar/Navbar";
 import { Link } from "react-router-dom";
@@ -79,13 +77,13 @@ const Carrito = ({ carrito, removeFromCart }) => {
           carrito.map((item) => (
             <Carrito_Item key={item.id_linea_pedido}>
               <Carrito_Text>
-                <div>
+                <Carrito_info>
                   <Carrito_Nombre>{item.nombre_producto}</Carrito_Nombre>
                   <Carrito_Precio>
                     {formatCurrency(item.precio_producto)}
                   </Carrito_Precio>
                   <p>Cantidad: {item.cantidad}</p>
-                </div>
+                </Carrito_info>
                 <div>
                   <p>
                     Subtotal:{" "}
@@ -106,9 +104,12 @@ const Carrito = ({ carrito, removeFromCart }) => {
         )}
       </Carrito_Container>
       {carrito && carrito.length > 0 && (
+        <Link to='/Pago'>
         <EnviarOrdenButton onClick={enviarOrden}>
           Proceder al pago
         </EnviarOrdenButton>
+        </Link>
+        
       )}
       {showModal && <Modal></Modal>}
     </div>
