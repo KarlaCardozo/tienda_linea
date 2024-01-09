@@ -76,7 +76,9 @@ app.post("/nueva_orden", async (req, res) => {
 
     const nuevaOrden = result.rows[0]; // Obtenemos la nueva orden agregada
 
-    res.status(200).json({ message: "Orden agregada correctamente", nuevaOrden });
+    res
+      .status(200)
+      .json({ message: "Orden agregada correctamente", nuevaOrden });
   } catch (error) {
     console.error("Error al agregar orden:", error);
     res.status(500).json({ error: "No se pudo agregar la orden" });
@@ -94,7 +96,6 @@ app.post("/nuevo_linea_producto", async (req, res) => {
       MONTO,
     } = req.body;
 
-  
     const result = await pool.query(
       "INSERT INTO LINEA_PRODUCTO (ID_PRODUCTO, ID_ORDEN, CANTIDAD, PRECIO_PROD, DESCUENTO_LINEA, MONTO) VALUES ($1, $2, $3, $4, $5, $6)",
       [ID_PRODUCTO, ID_ORDEN, CANTIDAD, PRECIO_PROD, DESCUENTO_LINEA, MONTO]
@@ -111,7 +112,6 @@ app.post("/nuevo_linea_producto", async (req, res) => {
   }
 });
 
-
 app.post("/nuevo_descripcion_metodo", async (req, res) => {
   try {
     const {
@@ -123,7 +123,7 @@ app.post("/nuevo_descripcion_metodo", async (req, res) => {
       cvv_tarjeta,
       referencia_tienda,
       cuenta_pasarela,
-      cuenta_deposito
+      cuenta_deposito,
     } = req.body; // Obtén los datos del cuerpo de la solicitud
 
     const result = await pool.query(
@@ -139,18 +139,46 @@ app.post("/nuevo_descripcion_metodo", async (req, res) => {
         cvv_tarjeta,
         referencia_tienda,
         cuenta_pasarela,
-        cuenta_deposito
+        cuenta_deposito,
       ]
     );
 
-    res.status(200).json({ message: "Datos de método de pago agregados correctamente" });
+    res
+      .status(200)
+      .json({ message: "Datos de método de pago agregados correctamente" });
   } catch (error) {
     console.error("Error al agregar datos de método de pago:", error);
-    res.status(500).json({ error: "No se pudieron agregar los datos de método de pago" });
+    res
+      .status(500)
+      .json({ error: "No se pudieron agregar los datos de método de pago" });
   }
 });
 
+app.post("/nuevo_linea_producto", async (req, res) => {
+  try {
+    const {
+      ID_METODO_PAGO,
+      ID_ORDEN,
+      ID_DESCRIPCION,
+      FECHA_PAGO,
+      MONTO_TOTAL,
+    } = req.body;
 
+    const result = await pool.query(
+      "INSERT INTO LINEA_PRODUCTO (ID_METODO_PAGO, ID_ORDEN, ID_DESCRIPCION, FECHA_PAGO, MONTO_TOTAL) VALUES ($1, $2, $3, $4, $5)",
+      [ID_METODO_PAGO, ID_ORDEN, ID_DESCRIPCION, FECHA_PAGO, MONTO_TOTAL]
+    );
+
+    res.status(200).json({
+      message: "Datos del pago de producto agregados correctamente",
+    });
+  } catch (error) {
+    console.error("Error al agregar los datos del pago de la orden:", error);
+    res.status(500).json({
+      error: "No se pudieron agregar los datos del pago de la orden",
+    });
+  }
+});
 
 app.listen(3000, () => {
   console.log("Server is running on port 3000");

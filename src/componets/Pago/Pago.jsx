@@ -8,10 +8,7 @@ import {
   Title,
   Form,
   Input,
-  Checkbox,
-  Label,
   Button,
-  Link,
   Text,
   Wrapper,
   Header,
@@ -28,7 +25,7 @@ const PaymentMethods = ({ carrito }) => {
   const [selectedMethod, setSelectedMethod] = useState("");
   const [paymentOptions, setPaymentOptions] = useState([]);
 
-console.log({carrito});
+  console.log({ carrito });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -45,17 +42,16 @@ console.log({carrito});
     fetchData();
   }, []);
 
-
   const handleSelectMethod = (event) => {
     setSelectedMethod(event.target.value);
   };
 
   const renderSelectedMethod = () => {
     switch (selectedMethod) {
-      case "Tarjeta de débito":
+      case "Tarjeta de débito ":
         return <DebitCard />;
       case "Tarjeta de crédito":
-        return <DebitCard />;
+        return <CreditCard />;
       case "Pasarela de pago":
         return <PayPal />;
       case "Tienda de conveniencia":
@@ -89,6 +85,120 @@ console.log({carrito});
   );
 };
 
+const CreditCard = () => {
+  const [cardNumber, setCardNumber] = useState("");
+  const [cardName, setCardName] = useState("");
+  const [cardExp, setCardExp] = useState("");
+  const [cardCVV, setCardCVV] = useState("");
+  const [selectedMethod, setSelectedMethod] = useState("");
+  const [registeredCards, setRegisteredCards] = useState([]);
+  const [selectedCardIndex, setSelectedCardIndex] = useState(-1);
+  const [selectedCardData, setSelectedCardData] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const metodo = await axios.get(
+          "http://localhost:3000/descripcion_metodo"
+        );
+        setRegisteredCards(metodo.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const handleAddCard = async (e) => {
+    e.preventDefault();
+    const newCard = {
+      id_cliente: 1, // Supongamos que hay un ID de cliente predefinido o puedes obtenerlo de alguna manera
+      id_metodo_pago: 1, // Supongamos que el ID del método de pago es 1 (debes obtenerlo de la interfaz)
+      num_tarjeta: cardNumber,
+      nom_tarjeta: cardName,
+      exp_tarjeta: cardExp,
+      cvv_tarjeta: cardCVV,
+    };
+
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/nuevo_descripcion_metodo",
+        newCard
+      );
+      console.log(response.data); // Muestra la respuesta de la API en la consola
+      setRegisteredCards([...registeredCards, newCard]); // Agrega la tarjeta a la lista solo después de que se confirma en la base de datos
+      setCardNumber("");
+      setCardName("");
+      setCardExp("");
+      setCardCVV("");
+    } catch (error) {
+      console.error("Error al agregar la tarjeta:", error);
+      // Puedes manejar el error de alguna manera aquí, como mostrar un mensaje al usuario
+    }
+  };
+
+  const handleSelectMethod = (index) => {
+    setSelectedCardIndex(index);
+    setSelectedMethod(`card${index}`);
+    const selectedCard = registeredCards.find((card, i) => i === index);
+    setSelectedCardData(selectedCard);
+  };
+
+  return (
+    <Container>
+      <div>
+        {registeredCards
+          .filter((card) => card.id_metodo_pago === 1)
+          .map((card, index) => (
+            <Container_Pago key={index}>
+              <Container_Met>
+                <input
+                  type="radio"
+                  value={`card${index}`}
+                  checked={selectedMethod === `card${index}`}
+                  onChange={() => handleSelectMethod(index)}
+                />
+                {card.num_tarjeta} - {card.nom_tarjeta}
+              </Container_Met>
+            </Container_Pago>
+          ))}
+      </div>
+      <Title>Agregar una tarjeta de crédito o débito</Title>
+      <Form>
+        <Input
+          type="text"
+          placeholder="Número de tarjeta"
+          value={cardNumber}
+          onChange={(e) => setCardNumber(e.target.value)}
+        />
+        <Input
+          type="text"
+          placeholder="Nombre en la tarjeta"
+          value={cardName}
+          onChange={(e) => setCardName(e.target.value)}
+        />
+        <Input
+          type="text"
+          placeholder="Fecha vencimiento"
+          value={cardExp}
+          onChange={(e) => setCardExp(e.target.value)}
+        />
+        <Input
+          type="text"
+          placeholder="CVV"
+          value={cardCVV}
+          onChange={(e) => setCardCVV(e.target.value)}
+        />
+        <Button onSubmit={handleAddCard}>Confirmar tarjeta</Button>
+      </Form>
+      <Pedido>
+        <Button disabled={!selectedCardData}>Hacer Orden</Button>
+      </Pedido>
+    </Container>
+  );
+};
+
 const DebitCard = () => {
   const [cardNumber, setCardNumber] = useState("");
   const [cardName, setCardName] = useState("");
@@ -115,7 +225,7 @@ const DebitCard = () => {
   }, []);
 
   const handleAddCard = async (e) => {
-    e.preventDefault(); 
+    e.preventDefault();
     const newCard = {
       id_cliente: 1, // Supongamos que hay un ID de cliente predefinido o puedes obtenerlo de alguna manera
       id_metodo_pago: 1, // Supongamos que el ID del método de pago es 1 (debes obtenerlo de la interfaz)
@@ -124,9 +234,12 @@ const DebitCard = () => {
       exp_tarjeta: cardExp,
       cvv_tarjeta: cardCVV,
     };
-  
+
     try {
-      const response = await axios.post("http://localhost:3000/nuevo_descripcion_metodo", newCard);
+      const response = await axios.post(
+        "http://localhost:3000/nuevo_descripcion_metodo",
+        newCard
+      );
       console.log(response.data); // Muestra la respuesta de la API en la consola
       setRegisteredCards([...registeredCards, newCard]); // Agrega la tarjeta a la lista solo después de que se confirma en la base de datos
       setCardNumber("");
@@ -138,7 +251,6 @@ const DebitCard = () => {
       // Puedes manejar el error de alguna manera aquí, como mostrar un mensaje al usuario
     }
   };
-  
 
   const handleSelectMethod = (index) => {
     setSelectedCardIndex(index);
@@ -151,9 +263,7 @@ const DebitCard = () => {
     <Container>
       <div>
         {registeredCards
-          .filter(
-            (card) => card.id_metodo_pago === 1 || card.id_metodo_pago === 2
-          )
+          .filter((card) => card.id_metodo_pago === 2)
           .map((card, index) => (
             <Container_Pago key={index}>
               <Container_Met>
@@ -230,7 +340,7 @@ const Cash = () => {
         </h2>
       </Section>
       <Section>
-        <h2>3. Realizar el pago en efectivo por $750.00 MXN</h2>
+        <h2>3. Realizar el pago en efectivo por {}</h2>
       </Section>
       <Section>
         <h2>4. Conserva el ticket para cualquier aclaración</h2>
