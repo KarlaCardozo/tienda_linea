@@ -18,9 +18,9 @@ const NavBar = () => {
       <Link to="/Ordenes">
         <LabelTitle> Historial de pedidos </LabelTitle>
       </Link>
-      <Link to="/Ediatr">
+      {/*<Link to="/Ediatr">
         <LabelTitle> Editar productos </LabelTitle>
-      </Link>
+  </Link>*/}
       <Link to="/Carrito">
         <Carrito />
       </Link>
