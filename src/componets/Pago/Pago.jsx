@@ -50,7 +50,7 @@ const PaymentMethods = ({ pedido }) => {
       case "Tarjeta de débito ":
         return <DebitCard />;
       case "Tarjeta de crédito":
-        return <CreditCard />;
+        return <CreditCard pedido={pedido} />;
       case "Pasarela de pago":
         return <PayPal />;
       case "Tienda de conveniencia":
@@ -84,7 +84,7 @@ const PaymentMethods = ({ pedido }) => {
   );
 };
 
-const CreditCard = () => {
+const CreditCard = ({ pedido }) => {
   const [cardNumber, setCardNumber] = useState("");
   const [cardName, setCardName] = useState("");
   const [cardExp, setCardExp] = useState("");
@@ -93,6 +93,7 @@ const CreditCard = () => {
   const [registeredCards, setRegisteredCards] = useState([]);
   const [selectedCardIndex, setSelectedCardIndex] = useState(-1);
   const [selectedCardData, setSelectedCardData] = useState(null);
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -131,6 +132,28 @@ const CreditCard = () => {
       setCardName("");
       setCardExp("");
       setCardCVV("");
+    } catch (error) {
+      console.error("Error al agregar la tarjeta:", error);
+      // Puedes manejar el error de alguna manera aquí, como mostrar un mensaje al usuario
+    }
+  };
+
+  const handleAddPago = async (e) => {
+    e.preventDefault();
+    const newPago = {
+      id_cliente: pedido.clienteId, // Supongamos que hay un ID de cliente predefinido o puedes obtenerlo de alguna manera
+      id_metodo_pago: 1, // Supongamos que el ID del método de pago es 1 (debes obtenerlo de la interfaz)
+      id_orden: pedido, // Supongamos que el ID delid
+      id_descripcion: 1,
+      monto_total: 2,
+    };
+
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/nuevo_descripcion_metodo",
+        newPago
+      );
+      console.log(response.data); // Muestra la respuesta de la API en la consola
     } catch (error) {
       console.error("Error al agregar la tarjeta:", error);
       // Puedes manejar el error de alguna manera aquí, como mostrar un mensaje al usuario
@@ -192,7 +215,9 @@ const CreditCard = () => {
         <Button onSubmit={handleAddCard}>Confirmar tarjeta</Button>
       </Form>
       <Pedido>
-        <Button disabled={!selectedCardData}>Hacer Orden</Button>
+        <Button onClick={handleAddPago} disabled={!selectedCardData}>
+          Hacer Orden
+        </Button>
       </Pedido>
     </Container>
   );
