@@ -18,6 +18,7 @@ import {
   StyledListItem,
   Pedido,
 } from "./Pago.style";
+import { Link } from "react-router-dom";
 import axios from "axios";
 
 const PaymentMethods = ({ pedido }) => {
@@ -48,7 +49,7 @@ const PaymentMethods = ({ pedido }) => {
   const renderSelectedMethod = () => {
     switch (selectedMethod) {
       case "Tarjeta de débito ":
-        return <DebitCard />;
+        return <DebitCard pedido={pedido} />;
       case "Tarjeta de crédito":
         return <CreditCard pedido={pedido} />;
       case "Pasarela de pago":
@@ -94,6 +95,37 @@ const CreditCard = ({ pedido }) => {
   const [selectedCardIndex, setSelectedCardIndex] = useState(-1);
   const [selectedCardData, setSelectedCardData] = useState(null);
 
+  console.log(pedido[0].totalOrden);
+
+  console.log({ selectedCardData });
+
+  const enviarPedidoPago = async () => {
+    if (pedido && pedido.length > 0 && pedido[0].idOrden) {
+      //console.log("si entra");
+      const promises = pedido.map(async (item) => {
+        try {
+          const response = await axios.post(
+            "http://localhost:3000/nuevo_pago",
+            {
+              ID_METODO_PAGO: 1,
+              ID_ORDEN: 3,
+              ID_DESCRIPCION: selectedCardData.id_descripcion,
+              MONTO_TOTAL: item.totalOrden,
+            }
+          );
+          return response.data;
+        } catch (error) {
+          console.error("Error al enviar la solicitud POST:", error);
+          throw error;
+        }
+      });
+
+      const results = await Promise.all(promises);
+      console.log("Respuestas:", results);
+    } else {
+      console.error("Pedido no válido o sin datos de orden.");
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -132,28 +164,6 @@ const CreditCard = ({ pedido }) => {
       setCardName("");
       setCardExp("");
       setCardCVV("");
-    } catch (error) {
-      console.error("Error al agregar la tarjeta:", error);
-      // Puedes manejar el error de alguna manera aquí, como mostrar un mensaje al usuario
-    }
-  };
-
-  const handleAddPago = async (e) => {
-    e.preventDefault();
-    const newPago = {
-      id_cliente: pedido.clienteId, // Supongamos que hay un ID de cliente predefinido o puedes obtenerlo de alguna manera
-      id_metodo_pago: 1, // Supongamos que el ID del método de pago es 1 (debes obtenerlo de la interfaz)
-      id_orden: pedido, // Supongamos que el ID delid
-      id_descripcion: 1,
-      monto_total: 2,
-    };
-
-    try {
-      const response = await axios.post(
-        "http://localhost:3000/nuevo_descripcion_metodo",
-        newPago
-      );
-      console.log(response.data); // Muestra la respuesta de la API en la consola
     } catch (error) {
       console.error("Error al agregar la tarjeta:", error);
       // Puedes manejar el error de alguna manera aquí, como mostrar un mensaje al usuario
@@ -212,18 +222,34 @@ const CreditCard = ({ pedido }) => {
           value={cardCVV}
           onChange={(e) => setCardCVV(e.target.value)}
         />
-        <Button onSubmit={handleAddCard}>Confirmar tarjeta</Button>
+        <Link to="/Realizado">
+          <Button
+            onClick={(e) => {
+              enviarPedidoPago();
+              handleAddCard(e);
+            }}
+          >
+            Confirmar tarjeta
+          </Button>
+        </Link>
       </Form>
       <Pedido>
-        <Button onClick={handleAddPago} disabled={!selectedCardData}>
-          Hacer Orden
-        </Button>
+        <Link to="/Realizado">
+          <Button
+            onClick={(e) => {
+              enviarPedidoPago();
+            }}
+            disabled={!selectedCardData}
+          >
+            Hacer Orden
+          </Button>
+        </Link>
       </Pedido>
     </Container>
   );
 };
 
-const DebitCard = () => {
+const DebitCard = ({ pedido }) => {
   const [cardNumber, setCardNumber] = useState("");
   const [cardName, setCardName] = useState("");
   const [cardExp, setCardExp] = useState("");
@@ -232,6 +258,37 @@ const DebitCard = () => {
   const [registeredCards, setRegisteredCards] = useState([]);
   const [selectedCardIndex, setSelectedCardIndex] = useState(-1);
   const [selectedCardData, setSelectedCardData] = useState(null);
+
+  console.log(pedido[0].totalOrden);
+
+  console.log({ selectedCardIndex });
+
+  const enviarPedidoPago = async () => {
+    if (pedido && pedido.length > 0 && pedido[0].idOrden) {
+      const promises = pedido.map(async (item) => {
+        try {
+          const response = await axios.post(
+            "http://localhost:3000/nuevo_pago",
+            {
+              ID_METODO_PAGO: 2,
+              ID_ORDEN: 3,
+              ID_DESCRIPCION: selectedCardIndex,
+              MONTO_TOTAL: item.totalOrden,
+            }
+          );
+          return response.data;
+        } catch (error) {
+          console.error("Error al enviar la solicitud POST:", error);
+          throw error;
+        }
+      });
+
+      const results = await Promise.all(promises);
+      console.log("Respuestas:", results);
+    } else {
+      console.error("Pedido no válido o sin datos de orden.");
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -252,7 +309,7 @@ const DebitCard = () => {
     e.preventDefault();
     const newCard = {
       id_cliente: 1, // Supongamos que hay un ID de cliente predefinido o puedes obtenerlo de alguna manera
-      id_metodo_pago: 1, // Supongamos que el ID del método de pago es 1 (debes obtenerlo de la interfaz)
+      id_metodo_pago: 2, // Supongamos que el ID del método de pago es 1 (debes obtenerlo de la interfaz)
       num_tarjeta: cardNumber,
       nom_tarjeta: cardName,
       exp_tarjeta: cardExp,
@@ -328,10 +385,28 @@ const DebitCard = () => {
           value={cardCVV}
           onChange={(e) => setCardCVV(e.target.value)}
         />
-        <Button onSubmit={handleAddCard}>Confirmar tarjeta</Button>
+        <Link to="/Realizado">
+          <Button
+            onClick={(e) => {
+              enviarPedidoPago();
+              handleAddCard(e);
+            }}
+          >
+            Confirmar tarjeta
+          </Button>
+        </Link>
       </Form>
       <Pedido>
-        <Button disabled={!selectedCardData}>Hacer Orden</Button>
+        <Link to="/Realizado">
+          <Button
+            onClick={(e) => {
+              enviarPedidoPago();
+            }}
+            disabled={!selectedCardData}
+          >
+            Hacer Orden
+          </Button>
+        </Link>
       </Pedido>
     </Container>
   );

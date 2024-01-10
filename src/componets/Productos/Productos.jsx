@@ -6,7 +6,6 @@ import {
   CardsLabel,
   ButtonAdd,
 } from "./Productos.style";
-import { Link } from "react-router-dom";
 import NavBar from "../NavBar/Navbar";
 import Contador from "../Counter/counter";
 import axios from "axios";

@@ -51,8 +51,9 @@ const Carrito = ({ carrito, removeFromCart, pedido }) => {
           productos: carrito, // Renombrar la clave para reflejar que son los productos del pedido
           clienteId: clienteId,
           idOrden: ordenCreada.id_orden,
+          totalOrden:totalOrden
         };
-        pedido([InfoPedido]);
+        pedido(InfoPedido);
 
         const promises = carrito.map(async (item) => {
           try {
@@ -166,6 +167,7 @@ const Carrito = ({ carrito, removeFromCart, pedido }) => {
         ) : (
           <ConteinerNADD>
             <p>No hay elementos en el carrito</p>
+            <Carrito_Icon/>
           </ConteinerNADD>
         )}
       </Carrito_Container>

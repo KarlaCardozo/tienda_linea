@@ -5,6 +5,7 @@ import Carrito from "../src/componets/Carrito/Carrito";
 import ProductSelect from "../src/componets/ProductSelect/ProductSelect";
 import PaymentMethods from "../src/componets/Pago/Pago";
 import Orden from "../src/componets/Ordenes/Ordenes";
+import Realizado from "../src/componets/Realizado/Realizado"
 import axios from "axios";
 
 const RoutesComponent = () => {
@@ -40,6 +41,7 @@ const RoutesComponent = () => {
         <Route path="/Descripcion_producto" element={<ProductSelect />} />
         <Route path="/Pago" element={<PaymentMethods pedido={pedidos}  />} />
         <Route path="/Ordenes" element={<Orden />} />
+        <Route path="/Realizado" element={<Realizado />} />
 
       </Routes>
     </Router>

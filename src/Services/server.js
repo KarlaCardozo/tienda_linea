@@ -164,7 +164,7 @@ app.post("/nuevo_pago", async (req, res) => {
     } = req.body;
 
     const result = await pool.query(
-      "INSERT INTO LINEA_PRODUCTO (ID_METODO_PAGO, ID_ORDEN, ID_DESCRIPCION, FECHA_PAGO, MONTO_TOTAL) VALUES ($1, $2, $3, CURRENT_DATE, $5)",
+      "INSERT INTO ORDEN_PAGO (ID_METODO_PAGO, ID_ORDEN, ID_DESCRIPCION, FECHA_PAGO, MONTO_TOTAL) VALUES ($1, $2, $3, CURRENT_DATE, $4)",
       [ID_METODO_PAGO, ID_ORDEN, ID_DESCRIPCION, MONTO_TOTAL]
     );
 
