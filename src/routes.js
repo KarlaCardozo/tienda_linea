@@ -16,7 +16,7 @@ const RoutesComponent = () => {
   };
 
   const pedido = async (elementsPedido) => {
-    setPedidos(prevCarrito => [...prevCarrito, elementsPedido]);
+    setPedidos(prevPedido => [...prevPedido, elementsPedido]);
   };
 
   console.log({carrito})
@@ -34,11 +34,11 @@ const RoutesComponent = () => {
         <Route
           path="/Carrito"
           element={
-            <Carrito carrito={carrito} removeFromCart={removeFromCart} />
+            <Carrito carrito={carrito} removeFromCart={removeFromCart} pedido={pedido} />
           }
         />
         <Route path="/Descripcion_producto" element={<ProductSelect />} />
-        <Route path="/Pago" element={<PaymentMethods carrito={carrito}  />} />
+        <Route path="/Pago" element={<PaymentMethods pedido={pedidos}  />} />
         <Route path="/Ordenes" element={<Orden />} />
 
       </Routes>

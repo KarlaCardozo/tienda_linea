@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import NavBar from "../NavBar/Navbar";
-import { useLocation } from "react-router-dom";
 import {
   Container_Pago,
   Container_Met,
@@ -21,11 +20,11 @@ import {
 } from "./Pago.style";
 import axios from "axios";
 
-const PaymentMethods = ({ carrito }) => {
+const PaymentMethods = ({ pedido }) => {
   const [selectedMethod, setSelectedMethod] = useState("");
   const [paymentOptions, setPaymentOptions] = useState([]);
 
-  console.log({ carrito });
+  console.log({ pedido });
 
   useEffect(() => {
     const fetchData = async () => {

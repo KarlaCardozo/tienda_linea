@@ -26,10 +26,12 @@ const formatCurrency = (amount) => {
   });
 };
 
-const Carrito = ({ carrito, removeFromCart }) => {
+const Carrito = ({ carrito, removeFromCart, pedido }) => {
   const [showModal, setShowModal] = useState(false);
   const [clienteId, setClienteId] = useState("");
+  const [idOrden, setIdOrden] = useState("");
 
+  console.log({ idOrden });
 
   const enviarOrden = async () => {
     if (clienteId) {
@@ -43,7 +45,14 @@ const Carrito = ({ carrito, removeFromCart }) => {
           }
         );
         const ordenCreada = ordenResponse.data.nuevaOrden;
-        console.log(ordenCreada);
+        setIdOrden(ordenCreada.id_orden);
+        console.log(ordenCreada.id_orden);
+        const InfoPedido = {
+          productos: carrito, // Renombrar la clave para reflejar que son los productos del pedido
+          clienteId: clienteId,
+          idOrden: ordenCreada.id_orden,
+        };
+        pedido([InfoPedido]);
 
         const promises = carrito.map(async (item) => {
           try {
@@ -79,12 +88,10 @@ const Carrito = ({ carrito, removeFromCart }) => {
     }
   };
 
-  // Calcular el total de descuentos
   const totalDescuentos = carrito.reduce((total, item) => {
     return total + item.precio_producto * item.descuento * item.cantidad;
   }, 0);
 
-  // Calcular el total de la orden
   const totalOrden = carrito.reduce((total, item) => {
     return (
       total +
@@ -163,8 +170,16 @@ const Carrito = ({ carrito, removeFromCart }) => {
         )}
       </Carrito_Container>
       {carrito && carrito.length > 0 && (
-        <Link to='/Pago'>
-          <EnviarOrdenButton onClick={enviarOrden}>
+        <Link
+          to={{
+            pathname: "/Pago",
+          }}
+        >
+          <EnviarOrdenButton
+            onClick={() => {
+              enviarOrden();
+            }}
+          >
             Proceder al pago
           </EnviarOrdenButton>
         </Link>
