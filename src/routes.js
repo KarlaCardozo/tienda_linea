@@ -19,9 +19,10 @@ const RoutesComponent = () => {
     setPedidos(prevCarrito => [...prevCarrito, elementsPedido]);
   };
 
+  console.log({carrito})
 
   const removeFromCart = (itemToRemove) => {
-    const updatedCart = carrito.filter((item) => item.id !== itemToRemove.id);
+    const updatedCart = carrito.filter((item) => item.id_producto !== itemToRemove.id_producto);
     setCarrito(updatedCart);
   };
 

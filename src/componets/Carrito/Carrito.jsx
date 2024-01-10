@@ -138,7 +138,6 @@ const Carrito = ({ carrito, removeFromCart }) => {
                       )}
                     </p>
                   </div>
-
                   <Carrito_Button onClick={() => removeFromCart(item)}>
                     Eliminar
                   </Carrito_Button>
@@ -160,17 +159,15 @@ const Carrito = ({ carrito, removeFromCart }) => {
         ) : (
           <ConteinerNADD>
             <p>No hay elementos en el carrito</p>
-            <Carrito_Icon />
           </ConteinerNADD>
         )}
       </Carrito_Container>
       {carrito && carrito.length > 0 && (
         <Link to='/Pago'>
-        <EnviarOrdenButton onClick={enviarOrden}>
-          Proceder al pago
-        </EnviarOrdenButton>
+          <EnviarOrdenButton onClick={enviarOrden}>
+            Proceder al pago
+          </EnviarOrdenButton>
         </Link>
-        
       )}
       {showModal && <Modal></Modal>}
     </div>

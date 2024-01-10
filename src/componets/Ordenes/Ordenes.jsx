@@ -70,6 +70,21 @@ const Orden = () => {
 
   const groupedOrders = groupOrdersById(resultados);
 
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const year = date.getFullYear().toString();
+    return `${day}-${month}-${year}`;
+  };
+
+  const formatCurrency = (amount) => {
+    return amount.toLocaleString("es-MX", {
+      style: "currency",
+      currency: "MXN",
+    });
+  };
+
   return (
     <div>
       <NavBar />
@@ -91,35 +106,47 @@ const Orden = () => {
           </ContainerDatos>
         )}
 
-        {Object.keys(groupedOrders).map((orderId) => (
-          <div key={orderId}>
-            <Orden_title>ID Orden: {orderId}</Orden_title>
-            <Table_Conteiner>
-              <TableHead>
-                <tr>
-                  <TableTH>ID Orden</TableTH>
-                  <TableTH>Fecha orden</TableTH>
-                  <TableTH>Productos</TableTH>
-                  <TableTH>Cantidad</TableTH>
-                  <TableTH>Precio</TableTH>
-                  <TableTH>Monto</TableTH>
-                </tr>
-              </TableHead>
-              <tbody>
-                {groupedOrders[orderId].map((orden) => (
-                  <TableTR key={orden.id_orden}>
-                    <TableCell>{orden.id_orden}</TableCell>
-                    <TableCell>{orden.fecha_orden}</TableCell>
-                    <TableCell>{orden.nombre_producto}</TableCell>
-                    <TableCell>{orden.cantidad}</TableCell>
-                    <TableCell>{orden.precio_prod}</TableCell>
-                    <TableCell>{orden.monto}</TableCell>
-                  </TableTR>
-                ))}
-              </tbody>
-            </Table_Conteiner>
-          </div>
-        ))}
+        {Object.keys(groupedOrders).map((orderId) => {
+          const total = groupedOrders[orderId].reduce(
+            (acc, orden) => acc + orden.monto,
+            0
+          );
+          return (
+            <div key={orderId}>
+              <Orden_title>ID Orden: {orderId}</Orden_title>
+              <Table_Conteiner>
+                <TableHead>
+                  <tr>
+                    <TableTH>ID Orden</TableTH>
+                    <TableTH>Fecha orden</TableTH>
+                    <TableTH>Productos</TableTH>
+                    <TableTH>Cantidad</TableTH>
+                    <TableTH>Precio</TableTH>
+                    <TableTH>Monto</TableTH>
+                  </tr>
+                </TableHead>
+                <tbody>
+                  {groupedOrders[orderId].map((orden) => (
+                    <TableTR key={orden.id_orden}>
+                      <TableCell>{orden.id_orden}</TableCell>
+                      <TableCell>{formatDate(orden.fecha_orden)}</TableCell>
+                      <TableCell>{orden.nombre_producto}</TableCell>
+                      <TableCell>{orden.cantidad}</TableCell>
+                      <TableCell>{formatCurrency(orden.precio_prod)}</TableCell>
+                      <TableCell>{formatCurrency(orden.monto)}</TableCell>
+                    </TableTR>
+                  ))}
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <TableTH colSpan="5">Total</TableTH>
+                    <TableCell>{formatCurrency(total)}</TableCell>
+                  </tr>
+                </tfoot>
+              </Table_Conteiner>
+            </div>
+          );
+        })}
 
         <Link to="/">
           <Container_Buttons>

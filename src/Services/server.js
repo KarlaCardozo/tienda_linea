@@ -154,7 +154,7 @@ app.post("/nuevo_descripcion_metodo", async (req, res) => {
   }
 });
 
-app.post("/nuevo_linea_producto", async (req, res) => {
+app.post("/nuevo_pago", async (req, res) => {
   try {
     const {
       ID_METODO_PAGO,
