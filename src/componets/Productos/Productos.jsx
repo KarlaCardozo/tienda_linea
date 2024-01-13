@@ -5,6 +5,9 @@ import {
   ContainerCards,
   CardsLabel,
   ButtonAdd,
+  SearchInput,
+  SearchButton,
+  SearchContainer,
 } from "./Productos.style";
 import NavBar from "../NavBar/Navbar";
 import Contador from "../Counter/counter";
@@ -24,6 +27,9 @@ const Productos = ({ addToCart }) => {
   const [productosFiltrados, setProductosFiltrados] = useState([]);
   const [cantidadSeleccionada, setCantidadSeleccionada] = useState(0);
   const [errorMessages, setErrorMessages] = useState([]);
+  const [elementos, setElementos] = useState([]);
+  const [resultados, setResultados] = useState([]);
+  const [producto, setProducto] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -44,7 +50,6 @@ const Productos = ({ addToCart }) => {
     };
 
     fetchData();
-    
   }, []);
 
   useEffect(() => {
@@ -60,11 +65,26 @@ const Productos = ({ addToCart }) => {
     }
   }, [categoriaSeleccionada, productos]);
 
+  const handleSearch = () => {
+    const productoEncontrado = productos.find(
+      (producto) => producto.nombre_producto === elementos
+    );
+
+    if (productoEncontrado) {
+      setResultados([productoEncontrado]);
+      setProducto(productoEncontrado);
+    } else {
+      setResultados([]);
+      setProducto(null);
+    }
+
+    console.log({ productoEncontrado });
+  };
 
   return (
     <ContainerMenus>
       <NavBar />
-      <div>
+      {/*  <div>
         <label htmlFor="categorias">Selecciona una categoría: </label>
         <select
           id="categorias"
@@ -78,13 +98,91 @@ const Productos = ({ addToCart }) => {
             </option>
           ))}
         </select>
+      </div> */}
+
+      <SearchContainer>
+        <SearchInput
+          type="text"
+          placeholder="¿Qué deseas buscar?"
+          value={elementos}
+          onChange={(e) => setElementos(e.target.value)}
+        />
+        <SearchButton onClick={handleSearch}>Buscar</SearchButton>
+      </SearchContainer>
+      <div>
+        {resultados.length > 0 && (
+          <div>
+            <h2>Resultados de la búsqueda:</h2>
+            <ul>
+              {resultados.map((resultado) => (
+                <li key={resultado.id}>{resultado.nombre_producto}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+        {categorias.map((categoria, indexCategoria) => (
+          <div key={indexCategoria}>
+            {categoria.descripcion_categoria}
+            <div>
+              <ContainerCards>
+                {productos
+                  .filter(
+                    (producto) =>
+                      producto.id_categoria === categoria.id_categoria
+                  )
+                  .map((producto, indexProducto) => (
+                    <CardsOptions className="card" key={indexProducto}>
+                      <CardsLabel>{producto.nombre_producto}</CardsLabel>
+                      <CardsLabel>
+                        {formatCurrency(producto.precio_producto)}
+                      </CardsLabel>
+                      <Contador
+                        onCountChange={(cantidad) => {
+                          setCantidadSeleccionada(cantidad);
+                        }}
+                      />
+                      <ButtonAdd
+                        onClick={() => {
+                          if (
+                            cantidadSeleccionada > 0 &&
+                            cantidadSeleccionada <= producto.existencia
+                          ) {
+                            const productoAgregado = {
+                              ...producto,
+                              cantidad: cantidadSeleccionada,
+                            };
+                            addToCart(productoAgregado);
+                            const newErrorMessages = [...errorMessages];
+                            newErrorMessages[indexProducto] = "";
+                            setErrorMessages(newErrorMessages);
+                          } else {
+                            const newErrorMessages = [...errorMessages];
+                            newErrorMessages[indexProducto] =
+                              "La cantidad seleccionada no es válida";
+                            setErrorMessages(newErrorMessages);
+                          }
+                        }}
+                      >
+                        Agregar
+                      </ButtonAdd>
+                      {errorMessages[indexProducto] && (
+                        <p>{errorMessages[indexProducto]}</p>
+                      )}
+                    </CardsOptions>
+                  ))}
+              </ContainerCards>
+            </div>
+          </div>
+        ))}
       </div>
-      <ContainerCards>
+      {/*<ContainerCards>
         {categoriaSeleccionada !== ""
           ? productosFiltrados.map((producto, index) => (
               <CardsOptions className="card" key={index}>
                 <CardsLabel>{producto.nombre_producto}</CardsLabel>
-                <CardsLabel>{formatCurrency(producto.precio_producto)}</CardsLabel>
+                <CardsLabel>
+                  {formatCurrency(producto.precio_producto)}
+                </CardsLabel>
                 <Contador
                   onCountChange={(cantidad) => {
                     setCantidadSeleccionada(cantidad);
@@ -106,7 +204,8 @@ const Productos = ({ addToCart }) => {
                       setErrorMessages(newErrorMessages);
                     } else {
                       const newErrorMessages = [...errorMessages];
-                      newErrorMessages[index] = "La cantidad seleccionada no es válida";
+                      newErrorMessages[index] =
+                        "La cantidad seleccionada no es válida";
                       setErrorMessages(newErrorMessages);
                     }
                   }}
@@ -119,7 +218,9 @@ const Productos = ({ addToCart }) => {
           : productos.map((producto, index) => (
               <CardsOptions className="card" key={index}>
                 <CardsLabel>{producto.nombre_producto}</CardsLabel>
-                <CardsLabel>{formatCurrency(producto.precio_producto)}</CardsLabel>
+                <CardsLabel>
+                  {formatCurrency(producto.precio_producto)}
+                </CardsLabel>
                 <Contador
                   onCountChange={(cantidad) => {
                     setCantidadSeleccionada(cantidad);
@@ -141,7 +242,8 @@ const Productos = ({ addToCart }) => {
                       setErrorMessages(newErrorMessages);
                     } else {
                       const newErrorMessages = [...errorMessages];
-                      newErrorMessages[index] = "La cantidad seleccionada no es válida";
+                      newErrorMessages[index] =
+                        "La cantidad seleccionada no es válida";
                       setErrorMessages(newErrorMessages);
                     }
                   }}
@@ -151,7 +253,7 @@ const Productos = ({ addToCart }) => {
                 {errorMessages[index] && <p>{errorMessages[index]}</p>}
               </CardsOptions>
             ))}
-      </ContainerCards>
+      </ContainerCards> */}
     </ContainerMenus>
   );
 };
