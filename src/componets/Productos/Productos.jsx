@@ -65,26 +65,23 @@ const Productos = ({ addToCart }) => {
     }
   }, [categoriaSeleccionada, productos]);
 
-  const handleSearch = () => {
-    const productoEncontrado = productos.find(
-      (producto) => producto.nombre_producto === elementos
-    );
+  const handleSearch = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:3000/busqueda_productos?searchTerm=${elementos}`
+      );
 
-    if (productoEncontrado) {
-      setResultados([productoEncontrado]);
-      setProducto(productoEncontrado);
-    } else {
+      setResultados(response.data);
+    } catch (error) {
+      console.error("Error fetching search results:", error);
       setResultados([]);
-      setProducto(null);
     }
-
-    console.log({ productoEncontrado });
   };
 
   return (
     <ContainerMenus>
       <NavBar />
-      {/*  <div>
+      <div>
         <label htmlFor="categorias">Selecciona una categoría: </label>
         <select
           id="categorias"
@@ -98,7 +95,7 @@ const Productos = ({ addToCart }) => {
             </option>
           ))}
         </select>
-      </div> */}
+      </div>
 
       <SearchContainer>
         <SearchInput
@@ -114,8 +111,45 @@ const Productos = ({ addToCart }) => {
           <div>
             <h2>Resultados de la búsqueda:</h2>
             <ul>
-              {resultados.map((resultado) => (
-                <li key={resultado.id}>{resultado.nombre_producto}</li>
+              {resultados.map((resultado, index) => (
+                <ContainerCards>
+                  <CardsOptions className="card" key={index}>
+                    <CardsLabel>{resultado.nombre_producto}</CardsLabel>
+                    <CardsLabel>
+                      {formatCurrency(resultado.precio_producto)}
+                    </CardsLabel>
+                    <Contador
+                      onCountChange={(cantidad) => {
+                        setCantidadSeleccionada(cantidad);
+                      }}
+                    />
+                    <ButtonAdd
+                      onClick={() => {
+                        if (
+                          cantidadSeleccionada > 0 &&
+                          cantidadSeleccionada <= producto.existencia
+                        ) {
+                          const productoAgregado = {
+                            ...producto,
+                            cantidad: cantidadSeleccionada,
+                          };
+                          addToCart(productoAgregado);
+                          const newErrorMessages = [...errorMessages];
+                          newErrorMessages[index] = "";
+                          setErrorMessages(newErrorMessages);
+                        } else {
+                          const newErrorMessages = [...errorMessages];
+                          newErrorMessages[index] =
+                            "La cantidad seleccionada no es válida";
+                          setErrorMessages(newErrorMessages);
+                        }
+                      }}
+                    >
+                      Agregar
+                    </ButtonAdd>
+                    {errorMessages[index] && <p>{errorMessages[index]}</p>}
+                  </CardsOptions>
+                </ContainerCards>
               ))}
             </ul>
           </div>
@@ -175,7 +209,7 @@ const Productos = ({ addToCart }) => {
           </div>
         ))}
       </div>
-      {/*<ContainerCards>
+      <ContainerCards>
         {categoriaSeleccionada !== ""
           ? productosFiltrados.map((producto, index) => (
               <CardsOptions className="card" key={index}>
@@ -253,7 +287,7 @@ const Productos = ({ addToCart }) => {
                 {errorMessages[index] && <p>{errorMessages[index]}</p>}
               </CardsOptions>
             ))}
-      </ContainerCards> */}
+      </ContainerCards>
     </ContainerMenus>
   );
 };

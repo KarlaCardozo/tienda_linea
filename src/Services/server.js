@@ -51,6 +51,27 @@ app.get("/metodo-pago", async (req, res) => {
   }
 });
 
+app.get("/busqueda_productos", async (req, res) => {
+  try {
+    const searchTerm = req.query.searchTerm; 
+    const busqueda = await pool.query("SELECT * FROM producto WHERE nombre_producto LIKE $1", [`%${searchTerm}%`]);
+    res.json(busqueda.rows);
+  } catch (error) {
+    console.error("Error fetching categories:", error);
+    res.status(500).json({ error: "Unable to fetch products" });
+  }
+});
+
+app.get("/descripcion_metodo", async (req, res) => {
+  try {
+    const metodo = await pool.query("SELECT * FROM descripcion_metodo");
+    res.json(metodo.rows);
+  } catch (error) {
+    console.error("Error fetching categories:", error);
+    res.status(500).json({ error: "Unable to fetch products" });
+  }
+});
+
 app.get("/descripcion_metodo", async (req, res) => {
   try {
     const metodo = await pool.query("SELECT * FROM descripcion_metodo");

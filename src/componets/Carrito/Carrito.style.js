@@ -161,6 +161,26 @@ export const Input = styled.input`
  }
 `;
 
+export const InputNum = styled.input`
+ width: 15%;
+ padding: 5px;
+ margin-top:20px;
+ margin-bottom: 30px;
+ border: 1px solid #ccc;
+ border-radius: 3px;
+ font-size: 16px;
+ transition: border-color 0.3s;
 
+ &:focus {
+    border-color: #0070f3;
+    outline: none;
+ }
+`;
+
+export const Subtotal = styled.h3`
+  font-size: 18px;
+  font-weight: bold;
+  color: #333333;
+`;
 
 

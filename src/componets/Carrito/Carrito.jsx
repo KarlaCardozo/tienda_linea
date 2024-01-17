@@ -14,6 +14,8 @@ import {
   Modal,
   Input,
   Carrito_info,
+  InputNum,
+  Subtotal
 } from "./Carrito.style";
 import NavBar from "../NavBar/Navbar";
 import { Link } from "react-router-dom";
@@ -119,15 +121,34 @@ const Carrito = ({ carrito, removeFromCart, pedido }) => {
         </ContainerHeader>
         {carrito && carrito.length > 0 ? (
           <>
-            {carrito.map((item) => (
+            {carrito.map((item, index) => (
               <Carrito_Item key={item.id_linea_pedido}>
                 <Carrito_Text>
-                  <Carrito_info>
+                <Carrito_info>
                     <Carrito_Nombre>{item.nombre_producto}</Carrito_Nombre>
                     <Carrito_Precio>
                       {formatCurrency(item.precio_producto)}
                     </Carrito_Precio>
-                    <p>Cantidad: {item.cantidad}</p>
+                    <Carrito_Precio>
+                      Cantidad:{" "}
+                      <InputNum
+                        type="number"
+                        value={item.cantidad}
+                        onChange={(e) => {
+                          const newCantidad = parseInt(e.target.value, 10);
+                          if (!isNaN(newCantidad) && newCantidad >= 0) {
+                            const newCarrito = [...carrito];
+                            newCarrito[index].cantidad = newCantidad;
+                            pedido({
+                              productos: newCarrito,
+                              clienteId: clienteId,
+                              idOrden: idOrden,
+                              totalOrden: totalOrden,
+                            });
+                          }
+                        }}
+                      />
+                    </Carrito_Precio>
                   </Carrito_info>
                   <div>
                     <p>
@@ -155,12 +176,12 @@ const Carrito = ({ carrito, removeFromCart, pedido }) => {
             {/* Mostrar los totales */}
             <Carrito_Item>
               <Carrito_Text>
-                <div>
+                <Subtotal>
                   <p>Total de Descuentos: {formatCurrency(totalDescuentos)}</p>
-                </div>
-                <div>
+                </Subtotal>
+                <Subtotal>
                   <p>Total de la Orden: {formatCurrency(totalOrden)}</p>
-                </div>
+                </Subtotal>
               </Carrito_Text>
             </Carrito_Item>
           </>
