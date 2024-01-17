@@ -59,6 +59,15 @@ export const ButtonAdd = styled.div`
   padding:5px;
 `;
 
+export const Container_Search = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  margin-bottom: 20px;
+  margin-top: 20px;
+  width: 90%;
+`;
+
 export const SearchContainer = styled.div`
   display: flex;
   align-items: center;
